@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"html/template"
 	"log"
 	"math"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -42,14 +44,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func resultHandler(w http.ResponseWriter, r *http.Request) {
-	// Parse form data
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Extract form data
 	amount, err := strconv.ParseInt(r.Form.Get("amount"), 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid loan amount", http.StatusBadRequest)
@@ -64,21 +64,16 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 	personalID := r.Form.Get("personalID")
 	Error := ""
 
-	// Check if borrower is blacklisted
 	if isBlacklisted(name) {
-		// http.Error(w, "You are not eligible for a loan", http.StatusForbidden)
-		Error = "You are not eligible for a loan"
+		http.Error(w, "You are not eligible for a loan", http.StatusForbidden)
 		return
 	}
 
-	// Check if borrower has exceeded the maximum number of applications
-	if isOverApplicationLimit(personalID) {
-		// http.Error(w, "You have exceeded the maximum number of loan applications", http.StatusTooManyRequests)
-		Error = "You have exceeded the maximum number of loan applications"
+	if isOverAppLimit(name, 5) {
+		http.Error(w, "Too many loan applications within 24h", http.StatusTooManyRequests)
 		return
 	}
 
-	// Calculate monthly payment
 	monthlyPayment := calculateMonthlyPayment(amount, term)
 
 	// Record loan application
@@ -103,7 +98,7 @@ func resultHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func calculateMonthlyPayment(amount, term int64) int64 {
-	monthlyInterestRate := 0.05 / 12.0 // 5% yearly interest rate divided by 12 for monthly rate
+	monthlyInterestRate := 0.05 / 12.0 // 5% yearly interest rate
 	power := math.Pow(1+monthlyInterestRate, float64(term))
 	monthlyPayment := int64((monthlyInterestRate * float64(amount) * power) / (power - 1))
 
@@ -112,45 +107,71 @@ func calculateMonthlyPayment(amount, term int64) int64 {
 
 func isBlacklisted(name string) bool {
 	// Read blacklist file
-	blacklistData, err := os.ReadFile("blacklist.txt")
+	content, err := os.ReadFile("blacklist.txt")
+	if err != nil {
+		fmt.Printf("Error reading blacklist file")
+	}
 
+	// Check if name is in blacklist
+	if strings.Contains(string(content), name) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func isOverAppLimit(name string, limit int) bool {
+	file, err := os.Open("applications.txt")
 	if err != nil {
 		return false
 	}
+	defer file.Close()
 
-	// Check if personal ID is in blacklist
-	blacklist := strings.Split(string(blacklistData), "\n")
-	for _, id := range blacklist {
-		if id == name {
+	// Read the file line by line and store the entries for the given name
+	var entries []time.Time
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Split(line, ", ")
+		if len(fields) >= 5 {
+			n := fields[2]
+			if n == name {
+				timestampStr := fields[4]
+				timestamp, err := time.Parse(time.RFC3339, timestampStr)
+				if err != nil {
+					return false
+				}
+				entries = append(entries, timestamp)
+			}
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return false
+	}
+
+	// If there are less than `limit` entries, return false
+	if len(entries) < limit {
+		return false
+	}
+
+	// Sort the entries by timestamp and check if there are more than `limit` entries within the last 24 hours
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Before(entries[j])
+	})
+	var count int
+	var currentDay time.Time
+	for _, entry := range entries {
+		if !entry.Truncate(24 * time.Hour).Equal(currentDay) {
+			currentDay = entry.Truncate(24 * time.Hour)
+			count = 0
+		}
+		count++
+		if count >= limit {
+			// If there are more than `limit` entries on the same day, return true
 			return true
 		}
 	}
 	return false
-}
-
-func isOverApplicationLimit(personalID string) bool {
-	applicationInterval := 24 * time.Hour / 5.0
-	// Count number of loan applications in the past 24 hours
-	applicationCount := 0
-	applicationData, err := os.ReadFile("applications.txt")
-	if err == nil {
-		applicationStrings := strings.Split(string(applicationData), "\n")
-		for _, applicationString := range applicationStrings {
-			if applicationString == "" {
-				continue
-			}
-			applicationFields := strings.Split(applicationString, ",")
-			if applicationFields[2] == personalID {
-				applicationTime, err := time.Parse(time.RFC3339, applicationFields[3])
-				if err == nil && time.Since(applicationTime) < applicationInterval {
-					applicationCount++
-				}
-			}
-		}
-	}
-
-	// Check if the number of applications exceeds the limit
-	return applicationCount >= 5
 }
 
 func recordLoanApplication(loanApplication loanApplication) {
