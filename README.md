@@ -1,5 +1,5 @@
 ### Description
-This simple Consumer Loan Application is a web application that allows customer to calculate the monthly payment for a consumer loan. The application is written in GO and only uses built-in functions
+This simple Consumer Loan Application is a web application that allows customer to calculate the monthly payment for a consumer loan. The application is written in GO and only uses built-in functions.
 
 ### Usage: how to run
 ```go run .``` to start the server at port 8080.
