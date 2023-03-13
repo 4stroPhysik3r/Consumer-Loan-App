@@ -8,7 +8,7 @@ You can now visit the URL: http://localhost:8080/ or directly click the link in 
 ### Implementation
 The program calculates the given values and returns the monthly payment based on an interest rate of 5%. It also checks if the borrower is eligible for the loan. The borrower is eligible if he/she is not blacklisted and has not made more than 5 applications in the last 24 hours.
 <br>
-The file ``blacklist.txt`` contains a list of blacklisted customers.
+The file ``blacklist.txt`` contains a list of blacklisted customers.<br>
 The file ``applications.txt`` logs all applications made by customers with timestamps.
 
 ### Final thoughts
