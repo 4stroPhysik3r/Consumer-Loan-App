@@ -10,6 +10,11 @@ The program calculates the given values and returns the monthly payment based on
 <br><br>
 The file ``blacklist.txt`` contains a list of blacklisted customers.<br>
 The file ``applications.txt`` logs all applications made by customers with timestamps.
+<br><br>
+Docker: The application can be run in a docker container. To build the image, run the following command in the project directory:
+```docker build -t consumer-loan-app .```
+followed by:<br>
+```docker run -p 8080:8080 consumer-loan-app```
 
 ### Final thoughts
 This is my first full web application written in GO. I learned a lot about back-end communication and web development in general.
