@@ -166,7 +166,7 @@ func isOverAppLimit(name string, limit int) bool {
 			count = 0
 		}
 		count++
-		if count >= limit {
+		if count > limit {
 			// If there are more than `limit` entries on the same day, return true
 			return true
 		}

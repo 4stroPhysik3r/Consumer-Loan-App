@@ -16,6 +16,10 @@ Docker: The application can be run in a docker container. To build the image, ru
 followed by:<br>
 ```docker run -p 8080:8080 consumer-loan-app```
 
+### Testing
+There are also testfiles for the neccessary functions. To run the tests, run the following command in the project directory:
+```go test```
+
 ### Final thoughts
 This is my first full web application written in GO. I learned a lot about back-end communication and web development in general.
 
