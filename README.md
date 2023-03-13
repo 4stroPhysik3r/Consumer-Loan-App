@@ -13,4 +13,3 @@ This is my first full web application written in GO. I learned a lot about back-
 
 ### Authors
 - Alexander Embacher (https://github.com/4stroPhysik3r)# consumer-loan-app
-# consumer-loan-app

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+	<head>
+		<title>Consumer Loan Application</title>
+	<style>
+		body {
+   			background-color: #36aa67;
+    		text-align: center;
+			font-family: "Open Sans", sans-serif;
+			font-size: 20px;
+			}			
+		h1 {
+			font-size: 50px;
+			}
+		.success {
+			font-size: 24px;
+			padding-bottom: 40px;
+			}
+		footer {
+			position: absolute;
+			left: 0; bottom: 0;
+			width: 100%;
+			background-color: black;
+			color: white;
+			font-size: 16px;
+			}
+		.box {
+			border-width: 10px;
+ 			border-style: double;
+ 			border-color: black;
+			border-radius: 8px;
+			}
+		.result {
+			font-size: 20px;
+		}
+	</style>
+<body>
+	<h1>Loan Application Calculation</h1>
+
+	{{ if .Error }}
+		<p style="color: red;">{{ .Error }}</p>
+	{{ else }}
+	<p class="success">{{ .Name }} (ID: {{ .PersonalID }}) successfully applied for a loan!
+		<br>Thank you for choosing our service!</p>
+		
+		<div class="box">
+		<p class="result"><u>Loan amount:</u> € {{ .Amount }}<br>
+		<br><u>Loan term:</u> {{ .Term }} months<br>
+		<br><u>Monthly payment:</u> <b>€ {{ .MonthlyPayment }}</b></p>
+	</div>
+	{{ end }}
+</body>
+	<footer>
+		<p>© 2023, Alexander Embacher</p>
+	</footer>
+</html>

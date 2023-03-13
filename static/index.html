@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+	<head>
+		<title>Consumer Loan Application</title>
+	</head>
+	<style>
+		body {
+			background-color: #36aa67;
+    		text-align: center;
+			font-family: "Open Sans", sans-serif;
+			}			
+		h1 {
+			font-size: 50px;
+			}
+		label {
+			font-size: 18px;
+			font-weight: 600;
+			}
+		.submit{
+			font-size: 16px;
+			font-style: oblique;
+			color: white;
+			background-color: darkslategray;
+			padding: 8px;
+			padding-right: 10px;
+			box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
+			border: none;
+			cursor: pointer;
+			}
+		input {
+			padding: 5px;			
+			border-radius: 5px;
+			margin-bottom: 15px;
+			font-size: 16px;
+			}
+		footer {
+			position: absolute;
+			left: 0; bottom: 0;
+			width: 100%;
+			background-color: black;
+			color: white;
+			font-size: 16px;
+			}
+			label[selection="placholder"] {
+				font-style: italic;
+			}
+	</style>
+<body>
+	<h1>Consumer Loan Application</h1>
+		<form action="/" method="POST">
+			<label for="amount">Loan amount:</label><br>	<!-- Loan amount -->
+				<input type="number" id="amount" name="amount" min="500" max="1000000" required placeholder="20000"><br>
+			<label for="term">Term (in months):</label><br>	<!-- Term -->
+				<input type="number" id="term" name="term" min="1" max="120" required placeholder="12"><br>
+			<label for="name">Name:</label><br>	<!-- Name -->
+				<input type="text" id="name" name="name" required placeholder="Mailis"><br>
+			<label for="personalID">Personal ID:</label><br> <!-- PersonalID -->
+				<input type="text" id="personalID" name="personalID" minlength="6" maxlength="10" required placeholder="MaiFG23"><br>
+				<input type="submit" class="submit" value="Apply">		<!-- Button -->
+	</form>
+</body>
+	<footer>
+		<p>© 2023, Alexander Embacher</p>
+	</footer>
+</html>
